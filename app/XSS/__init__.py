@@ -1,0 +1,204 @@
+from flask import Flask, render_template, request, redirect, url_for, render_template_string
+from tinydb import TinyDB
+import os
+
+app = Flask(__name__)
+db = TinyDB('app/XSS/database/comments.json')
+
+
+@app.route('/')
+def index():
+    template = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>XSS vuln APP</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+        <style>
+            .card{border: 0 !important;}
+        </style>
+    </head>
+    <body style="background: url('https://hdwallpaperim.com/wp-content/uploads/2017/08/23/472249-space-colorful-galaxy-purple.jpg') fixed;">
+
+        <nav class="navbar fixed-top navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/" style="width: 50%">
+                  <img src="../static/img/bifrost.png" alt="" style="width: 8%;" class="d-inline-block align-text-top">
+                </a>
+
+                <form class="d-flex" action="/search">
+                    <input class="form-control me-2" type="search" name="search" placeholder="Search" aria-label="Search"> 
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+          </div>
+        </nav>
+
+        <div class="container bg-dark" style="margin-top: 10%; margin-bottom: 5%; padding-bottom: 2%; box-shadow: 0px 0px 20px 7px black;">
+            <div class="card bg-dark">
+                <img src="../static/img/bifrost.png" class="card-img-top" alt="..." style="width: 30%; align-self: center;">
+                <hr style="color: white;">
+                <div class="card-body bg-dark" style="color: white">
+                    <h1 class="card-title">Bifrost</h1>
+                    <h4>What's Bifrost?</h4>
+                    <p class="card-text">Bifrost is an open-source Discord BOT that works as Command and Control (C2). This C2 uses Discord API for communication between clients and server.</p>
+                    <h4>How Bifrost works?</h4>
+                    <p class="card-text">
+                        As mentioned before, Bifrost is basically a discord bot that receive commands from the Discord user and do a pre-defined task.
+                        <br><br>
+                        So for every client that you are going to "infect", you will send a copy of this discord bot, and it will respond to you using discord. This allows you to hide behind Discord service being stealth and have a secure connection between you and your client.
+                        <br><br>
+                        <b>Disclaimer: This project should be used for authorized testing or educational purposes only.</b>
+                    </p>
+
+
+                    <a href="https://github.com/th3r4ven/Bifrost" target="_blank" class="btn btn-primary">Check Bifrost Repo</a>
+                </div>
+            </div>
+
+            <div class="card bg-dark" style="color: white;"><hr style="color: white;"><h3 class="card-title">Comments</h3></div>
+
+            <div class="row row-cols-1 row-cols-md-3 g-4 bg-dark">"""
+    for comment in db.all():
+        template += f"""
+                <div class="col">
+                    <div class="card bg-dark" style="color: white; box-shadow: 0px 0px 6px white; border: 1px solid white !important;">
+                        <div class="card-body">
+                            <h5 class="card-title">{comment['username']}</h5>
+                            <p class="card-text">{comment['comment']}</p>
+                        </div>
+                    </div>
+                </div>
+        """
+
+    template += """</div>
+            <div class="card bg-dark"><hr style="color: white;"></div>
+
+            <div class="col-md-12 row" style="margin-top: 2%">
+                <div class="col-md-4" style="color: white">
+                    <div class="card bg-dark" style="color: white;">
+                        <div class="card-body">
+                            <h5 class="card-title">Leave your comment.</h5>
+                            <p class="card-text">By submiting your comment on our page, you accept the terms of service and data privacy.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" style="color: white">
+                    <form action="/comments" method="post" autocomplete="off">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" name="username" id="username" placeholder="Username">
+                        </div>
+                        <div class="mb-3">
+                            <label for="comment" class="form-label">Comment</label>
+                            <textarea class="form-control" name="comment" id="comment" rows="3"></textarea>
+                        </div>
+                        <div class="mb-1">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-4" style="color: white">
+                    <div class="card bg-dark" style="color: white;">
+                        <div class="card-body">
+                            <h5 class="card-title">Author: <a style="color: white" href="https://github.com/th3r4ven" target="_blank">TH3R4VEN</a></h5>
+                            <img src="https://github-readme-stats.vercel.app/api/pin/?username=th3r4ven&repo=bifrost&theme=midnight-purple" alt="" style="width: -webkit-fill-available;">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <footer class="footer fixed-bottom bg-dark" style="text-align: center;padding: 0.5%;color: white;">
+            <div class="container">
+                <span style="color: white;">© 2021 GhostSec. Todos os direitos reservados.</span>
+            </div>
+        </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    </body>
+    </html>
+    """
+
+    if os.getenv('SAFE', 'False').capitalize() == 'True':
+        return render_template('index.html', comments=db.all())
+
+    return render_template_string("%s" % template)
+
+
+
+@app.route('/comments', methods=['POST'])
+def add_comment():
+
+    db.insert({
+        'username': request.form.get('username'),
+        'comment': request.form.get('comment')
+    })
+
+    return redirect(url_for('index'))
+
+
+@app.route('/search')
+def search():
+
+    template = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XSS vuln APP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <style>
+        .card{border: 0 !important;}
+    </style>
+</head>
+<body style="background: url('https://hdwallpaperim.com/wp-content/uploads/2017/08/23/472249-space-colorful-galaxy-purple.jpg') fixed;">
+
+    <nav class="navbar fixed-top navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/" style="width: 50%">
+              <img src="../static/img/bifrost.png" alt="" style="width: 8%;" class="d-inline-block align-text-top">
+            </a>
+
+            <form class="d-flex" action="/search">
+                <input class="form-control me-2" type="search" name="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+      </div>
+    </nav>
+
+    <div class="container bg-dark" style="margin-top: 10%; margin-bottom: 5%; padding-bottom: 2%; box-shadow: 0px 0px 20px 7px black;">
+        <div class="card bg-dark">
+            <img src="../static/img/bifrost.png" class="card-img-top" alt="..." style="width: 30%; align-self: center;">
+            <hr style="color: white;">
+            <div class="card-body bg-dark" style="color: white">
+                <h1 class="card-title">Results for: """ + request.args.get('search', '') + """</h1>
+                <p class="card-text">Results here...</p>
+
+                <a href="https://github.com/th3r4ven/Bifrost" target="_blank" class="btn btn-primary">Check Bifrost Repo</a>
+            </div>
+        </div>
+    </div>
+
+
+    <footer class="footer fixed-bottom bg-dark" style="text-align: center;padding: 0.5%;color: white;">
+        <div class="container">
+            <span style="color: white;">© 2021 GhostSec. Todos os direitos reservados.</span>
+        </div>
+    </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+</body>
+</html>
+    """
+
+    if os.getenv('SAFE', 'False').capitalize() == 'True':
+        return render_template('search.html', search=request.args.get('search', ''))
+    return render_template_string('%s' % template)
+
+
+def create_app():
+
+    return app

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XSS vuln APP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <style>
+        .card{border: 0 !important;}
+    </style>
+</head>
+<body style="background: url('https://hdwallpaperim.com/wp-content/uploads/2017/08/23/472249-space-colorful-galaxy-purple.jpg') fixed;">
+
+    <nav class="navbar fixed-top navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/" style="width: 50%">
+              <img src="../static/img/bifrost.png" alt="" style="width: 8%;" class="d-inline-block align-text-top">
+            </a>
+
+            <form class="d-flex" action="/search">
+                <input class="form-control me-2" type="search" name="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+      </div>
+    </nav>
+
+    <div class="container bg-dark" style="margin-top: 10%; margin-bottom: 5%; padding-bottom: 2%; box-shadow: 0px 0px 20px 7px black;">
+        <div class="card bg-dark">
+            <img src="../static/img/bifrost.png" class="card-img-top" alt="..." style="width: 30%; align-self: center;">
+            <hr style="color: white;">
+            <div class="card-body bg-dark" style="color: white">
+                <h1 class="card-title">Results for: {{ search }}</h1>
+                <p class="card-text">Results here....</p>
+
+                <a href="https://github.com/th3r4ven/Bifrost" target="_blank" class="btn btn-primary">Check Bifrost Repo</a>
+            </div>
+        </div>
+    </div>
+
+
+    <footer class="footer fixed-bottom bg-dark" style="text-align: center;padding: 0.5%;color: white;">
+        <div class="container">
+            <span style="color: white;">© 2021 GhostSec. Todos os direitos reservados.</span>
+        </div>
+    </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+</body>
+</html>
